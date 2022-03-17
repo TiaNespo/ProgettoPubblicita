@@ -7,6 +7,7 @@ package botpubblicita;
 
 import TelegramApi.*;
 import java.io.IOException;
+import java.util.Scanner;
 import org.json.*;
 
 /**
@@ -20,10 +21,12 @@ public class Botpubblicita {
      */
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        test t=new test();
+        ThreadAscolta t=new ThreadAscolta();
         
-        t.Esegui();
-        t.InviaMessaggio();
+        t.start();
+        
+        
+        //t.InviaMessaggio();
     }
-    
+
 }

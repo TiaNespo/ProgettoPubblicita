@@ -23,36 +23,25 @@ public class test {
 
     From f = new From();
     Chat c = new Chat();
+    Messaggio m;
 
-    public void Esegui() throws MalformedURLException, IOException {
-        URL url = new URL("https://api.telegram.org/bot5247364707:AAF0kPzYKpcoO1b99ORy5B7ZafT969B0ntc/getUpdates");
+    public Messaggio Leggi() throws MalformedURLException, IOException {
+        URL url = new URL("https://api.telegram.org/bot5247364707:AAF0kPzYKpcoO1b99ORy5B7ZafT969B0ntc/getUpdates?offset=-1");
         InputStream is = url.openConnection().getInputStream();
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
         String line = null;
         String s = "";
         while ((line = reader.readLine()) != null) {
             s += line;
         }
-        System.out.println(s);
         ConvertJSON(s);
+        
+        return m;
     }
 
-    public void InviaMessaggio() throws MalformedURLException, IOException {
-
-        Scanner s=new Scanner(System.in);
-        String testo=s.nextLine();
-        URL url = new URL("https://api.telegram.org/bot5247364707:AAF0kPzYKpcoO1b99ORy5B7ZafT969B0ntc/sendMessage?chat_id="+c.getId()+"&text="+testo);
-        url.openStream();
-
-    }
-
-    public void ConvertJSON(String s) {
+    public void ConvertJSON(String s) throws IOException {
         String jsonString = s; //assign your JSON String here
         JSONObject objs = new JSONObject(jsonString);
-        //String v = obj.getString("nome");
-        //System.out.println(v);
         JSONArray arr = objs.getJSONArray("result"); // notice that `"posts": [...]`
         for (int i = 0; i < arr.length(); i++) {
             //Risultato post_id = arr.getJSONObject(i);
@@ -71,9 +60,16 @@ public class test {
             c.setUsername(result.getJSONObject("message").getJSONObject("chat").getString("username"));
             c.setType(result.getJSONObject("message").getJSONObject("chat").getString("type"));
 
-            Messaggio m = new Messaggio(result.getLong("update_id"), f, c, result.getJSONObject("message").getLong("date"), result.getJSONObject("message").getString("text"));
+            m = new Messaggio(result.getLong("update_id"), f, c, result.getJSONObject("message").getLong("date"), result.getJSONObject("message").getString("text"),result.getJSONObject("message").getLong("message_id"));
 
-            System.out.println(m.ToString());
         }
     }
+
+    public void InviaMessaggio(String testo,Chat c) throws MalformedURLException, IOException {
+
+        URL url = new URL("https://api.telegram.org/bot5247364707:AAF0kPzYKpcoO1b99ORy5B7ZafT969B0ntc/sendMessage?chat_id=" + c.getId() + "&text=" +"La città impostata è: "+ testo);
+        url.openStream();
+
+    }
+
 }
