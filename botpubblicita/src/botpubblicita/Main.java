@@ -5,6 +5,19 @@
  */
 package botpubblicita;
 
+import TelegramApi.test;
+import static botpubblicita.ThreadAscolta.getElement;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
 /**
  *
  * @author Mattia
@@ -14,8 +27,10 @@ public class Main extends javax.swing.JFrame {
     /**
      * Creates new form Main
      */
+    ThreadAscolta t=new ThreadAscolta();
     public Main() {
         initComponents();
+        t.start();
     }
 
     /**
@@ -29,30 +44,35 @@ public class Main extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        citta = new javax.swing.JTextPane();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane2 = new javax.swing.JTextPane();
+        raggio = new javax.swing.JTextPane();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextPane3 = new javax.swing.JTextPane();
+        testo = new javax.swing.JTextPane();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Inserire Città");
 
-        jScrollPane1.setViewportView(jTextPane1);
+        jScrollPane1.setViewportView(citta);
 
         jLabel2.setText("Inserire Raggio");
 
-        jScrollPane2.setViewportView(jTextPane2);
+        jScrollPane2.setViewportView(raggio);
 
         jLabel3.setText("Inserire Testo Pubblicità");
 
-        jScrollPane3.setViewportView(jTextPane3);
+        jScrollPane3.setViewportView(testo);
 
         jButton1.setText("Invia");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -103,6 +123,48 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public static double GetDistanceKilometers(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371.0088;
+        Double latDistance = Math.toRadians((lat2 - lat1));
+        Double lonDistance = Math.toRadians((lon2 - lon1));
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        double a = haversin(latDistance) + Math.cos(lat1) * Math.cos(lat2) * haversin(lonDistance);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    private static double haversin(double val) {
+        return Math.pow(Math.sin(val / 2), 2);
+    }
+
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Element e;
+        test t=new test();
+        try {
+            e = getElement("https://nominatim.openstreetmap.org/search?q=" + citta.getText() + "&format=xml&addressdetails=1");
+            Node place = e.getElementsByTagName("place").item(0);
+            double latitudine = Double.parseDouble(place.getAttributes().getNamedItem("lat").getNodeValue());
+            double longitudine = Double.parseDouble(place.getAttributes().getNamedItem("lon").getNodeValue());
+            Utenti u = new Utenti();
+            for (int i = 0; i < u.lista.size(); i++) {
+                if(GetDistanceKilometers(latitudine, longitudine, u.lista.get(i).getLatitudine(), u.lista.get(i).getLongitudine())<=Double.parseDouble(raggio.getText())){
+                    t.InviaMessaggio("Pubblicità Per Te: "+testo.getText(),u.lista.get(i).getId());
+                }
+            }
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -139,6 +201,7 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextPane citta;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -146,8 +209,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JTextPane jTextPane2;
-    private javax.swing.JTextPane jTextPane3;
+    private javax.swing.JTextPane raggio;
+    private javax.swing.JTextPane testo;
     // End of variables declaration//GEN-END:variables
 }

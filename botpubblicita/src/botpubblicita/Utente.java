@@ -5,12 +5,15 @@
  */
 package botpubblicita;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,12 +25,19 @@ public class Utente {
 
     private String first_name;
     private String second_name;
-    private String città;
     private Long id;
     private Double latitudine;
     private Double longitudine;
 
     public Utente() {
+    }
+
+    public Utente(String first_name, String second_name, Long id, Double latitudine, Double longitudine) {
+        this.first_name = first_name;
+        this.second_name = second_name;
+        this.id = id;
+        this.latitudine = latitudine;
+        this.longitudine = longitudine;
     }
 
     public String getFirst_name() {
@@ -44,14 +54,6 @@ public class Utente {
 
     public void setSecond_name(String second_name) {
         this.second_name = second_name;
-    }
-
-    public String getCittà() {
-        return città;
-    }
-
-    public void setCittà(String città) {
-        this.città = città;
     }
 
     public Long getId() {
@@ -78,19 +80,45 @@ public class Utente {
         this.longitudine = longitudine;
     }
 
+    
     public void SalvaCSV() throws FileNotFoundException {
 
-        String s = first_name +";"+ second_name +";"+ id +";"+ latitudine+";"+ longitudine+"\n";
-
+        File file = new File("NomiCitta.csv");
         try {
-            Files.writeString(Paths.get("NomiCitta.txt"), s, StandardOpenOption.APPEND);
+            file.createNewFile();
+        } catch (IOException ex) {
+            Logger.getLogger(Utente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Scanner scanner = new Scanner(file);
+        StringBuffer stringBuffer = new StringBuffer();
+        String rigaDaModificare = null;
+        while (scanner.hasNextLine()) {
+            String riga = scanner.nextLine();
+            if (riga.contains(String.valueOf(id))) {
+                rigaDaModificare = riga;
+            }
+            stringBuffer.append(riga + System.lineSeparator());
+        }
+        String contents = stringBuffer.toString();
+        scanner.close();
+        if (rigaDaModificare != null) {
+            contents = contents.replaceAll(rigaDaModificare, id + ";" + first_name + ";" + second_name + ";" + latitudine + ";" + longitudine);
+        } else {
+            contents += id + ";" + first_name + ";" + second_name + ";" + latitudine + ";" + longitudine + System.lineSeparator();
+        }
+        contents = contents.trim();
+        FileWriter writer;
+        try {
+            writer = new FileWriter(file);
+            writer.write(contents);
+            writer.close();
         } catch (IOException ex) {
             Logger.getLogger(Utente.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
-    
-     /*public static double GetDistanceKilometers() {
+
+    /*public static double GetDistanceKilometers() {
         double R = 6371.0088;
         Double lat1 = location1.lat;
         Double lon1 = location1.lon;
