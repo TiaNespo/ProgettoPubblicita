@@ -14,23 +14,22 @@ public class Summary {
     /*    
         //lettura di un file JSon
     
-        URL url= new URL("");
         InputStream is = url.openConnection().getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        String lineafile = null;
-        String allfile = "";
-        while ((lineafile = reader.readLine()) != null) {
-            allfile += lineafile;
+        String line = null;
+        String s = "";
+        while ((line = reader.readLine()) != null) {
+            s += line;
         }
     
         //parsing del file JSon
     
-        JSONObject objs = new JSONObject(allfile);
-        JSONArray arr = objs.getJSONArray("eventuale nome dell'array"); // notice that `"posts": [...]`
+        JSONObject objs = new JSONObject(s);
+        JSONArray arr = objs.getJSONArray("eventuale nome dell'array"); // può dover essere fatto prima
         if (!arr.isEmpty()) {
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject result = arr.getJSONObject(i);
-                result.getJSONObject(" ").getJSONObject(" ").getString(" "));
+                result.getJSONObject(" ").getString(" ");
             }
         }
     
@@ -69,24 +68,24 @@ public class Summary {
             Logger.getLogger(Utente.class.getName()).log(Level.SEVERE, null, ex);
         }
     
-        //lettura file csv
+        //lettura file csv    
     
         Files.readAllLines(Paths.get("NomiCitta.csv"))
         
-        //lettura file xml
-        chiamata alla procedura sottostante
-        Element e = getElement("https://nominatim.openstreetmap.org/search?q=" CITTA DA CERCARE "&format=xml&addressdetails=1");
+        //operazioni con file XML
     
-        funzione per la lettura del file
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        var document = builder.parse(url);
-        return document.getDocumentElement();
+        var document = builder.parse("utl pagina XML");
+        NodeList lista = document.getElementsByTagName("tag"); //salva lista di nodi        
+
         
+        Node place = lista.item(0); //salva singolo nodo || lista.item(i);
+        place.getAttributes();        
+        String s = document.getElementsByTagName("place").item(0).getTextContent();//salvare il valore
+        NamedNodeMap attr = document.getElementsByTagName("place").item(0).getAttributes(); //variabile per lavorare con gli attributi
+        attr.getNamedItem("currency").getNodeValue(); //prendere valore di un attributo
         
-        Node place = e.getElementsByTagName("place").item(0); -> ritorna un vettore di place        
-        place.getAttributes().getNamedItem("lat").getNodeValue() -> per prendere un attributo del place
-    
         
     
     
